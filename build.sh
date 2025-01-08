@@ -16,8 +16,9 @@ sed "s/com\.neovide\.project/$BUNDLE_ID/g" "src/Contents/Info.plist" >"build/$AP
 # Compile Swift launcher
 swiftc "src/Contents/MacOS/neovide-project-launcher.swift" -o "build/$APP_NAME.app/Contents/MacOS/neovide-project-launcher"
 
-# Copy and set permissions for shell script
+# Copy resources
 cp "src/Contents/Resources/neovide-project" "build/$APP_NAME.app/Contents/Resources/"
+cp "src/Contents/Resources/neovide.icns" "build/$APP_NAME.app/Contents/Resources/"
 chmod +x "build/$APP_NAME.app/Contents/Resources/neovide-project"
 
 echo "Build complete: build/$APP_NAME.app"
