@@ -34,6 +34,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        return true
+    }
+
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool)
+        -> Bool
+    {
+        return true
+    }
+
     func application(_ application: NSApplication, open urls: [URL]) {
         log("Received URLs: \(urls)")
         for url in urls {
