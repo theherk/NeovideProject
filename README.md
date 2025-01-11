@@ -6,6 +6,8 @@ A macOS application that manages Neovide instances per Git repository, providing
 
 As you can see in the screencast included, this can be used in association with any of several [Raycast](https://www.raycast.com/) extensions, or any other workflow management tool that can call `open`. My favorite is in combination with [Zoxide Git Projects](https://www.raycast.com/theherk/zoxide-git-projects), with which you can easily fuzzy find from all previously opened git projects.
 
+View a longer [Introductory video in the wiki](https://github.com/theherk/NeovideProject/wiki/Usage).
+
 ## Features
 
 - Single instance per Git repository
