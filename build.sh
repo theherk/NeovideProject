@@ -29,9 +29,17 @@ mkdir -p "build/$APP_NAME.app/Contents/Resources"
 sed "s/com\.neovide\.project/$BUNDLE_ID/g" "src/Contents/Info.plist" >"build/$APP_NAME.app/Contents/Info.plist"
 
 # Compile Swift launcher
+echo "Compiling for architecture: $ARCH with target: $TARGET"
 swiftc "src/Contents/MacOS/neovide-project-launcher.swift" \
 	-target $TARGET \
 	-o "build/$APP_NAME.app/Contents/MacOS/neovide-project-launcher"
+
+# Verify the binary was created
+if [ ! -f "build/$APP_NAME.app/Contents/MacOS/neovide-project-launcher" ]; then
+	echo "ERROR: Binary was not created!"
+	ls -la "build/$APP_NAME.app/Contents/MacOS/"
+	exit 1
+fi
 
 # Copy resources
 cp "src/Contents/Resources/neovide-project" "build/$APP_NAME.app/Contents/Resources/"
@@ -41,6 +49,8 @@ chmod +x "build/$APP_NAME.app/Contents/Resources/neovide-project"
 # Verify architecture of built binary
 echo "Verifying binary architecture..."
 file "build/$APP_NAME.app/Contents/MacOS/neovide-project-launcher"
+echo "Full directory structure:"
+ls -R build/
 
 echo "Building DMG..."
 hdiutil create -volname "$APP_NAME" -srcfolder "build/$APP_NAME.app" -ov -format UDZO "build/$APP_NAME.dmg"

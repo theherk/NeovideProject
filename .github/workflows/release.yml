@@ -16,14 +16,22 @@ jobs:
 
       - name: Build Intel App
         run: |
+          echo "Building Intel version..."
           ARCH="x86_64" ./build.sh
+          echo "Checking Intel build contents..."
+          ls -R build/
+          echo "Copying Intel build..."
           cp -R build/NeovideProject.app build/NeovideProject-intel.app || exit 1
           cp build/NeovideProject.dmg build/NeovideProject-intel.dmg || exit 1
           rm -rf build/NeovideProject.app build/NeovideProject.dmg
 
       - name: Build ARM App
         run: |
+          echo "Building ARM version..."
           ARCH="arm64" ./build.sh
+          echo "Checking ARM build contents..."
+          ls -R build/
+          echo "Copying ARM build..."
           cp -R build/NeovideProject.app build/NeovideProject-arm.app || exit 1
           cp build/NeovideProject.dmg build/NeovideProject-arm.dmg || exit 1
           rm -rf build/NeovideProject.app build/NeovideProject.dmg
