@@ -17,13 +17,13 @@ jobs:
       - name: Build Intel App
         run: |
           echo "Building Intel version..."
+          rm -rf build/
           ARCH="x86_64" ./build.sh
           echo "Checking Intel build contents..."
           ls -R build/
-          echo "Copying Intel build..."
-          cp -R build/NeovideProject.app build/NeovideProject-intel.app || exit 1
-          cp build/NeovideProject.dmg build/NeovideProject-intel.dmg || exit 1
-          rm -rf build/NeovideProject.app build/NeovideProject.dmg
+          echo "Moving Intel build..."
+          mv build/NeovideProject.app build/NeovideProject-intel.app
+          mv build/NeovideProject.dmg build/NeovideProject-intel.dmg
 
       - name: Build ARM App
         run: |
@@ -31,10 +31,9 @@ jobs:
           ARCH="arm64" ./build.sh
           echo "Checking ARM build contents..."
           ls -R build/
-          echo "Copying ARM build..."
-          cp -R build/NeovideProject.app build/NeovideProject-arm.app || exit 1
-          cp build/NeovideProject.dmg build/NeovideProject-arm.dmg || exit 1
-          rm -rf build/NeovideProject.app build/NeovideProject.dmg
+          echo "Moving ARM build..."
+          mv build/NeovideProject.app build/NeovideProject-arm.app
+          mv build/NeovideProject.dmg build/NeovideProject-arm.dmg
 
       - name: Create Universal App
         run: |

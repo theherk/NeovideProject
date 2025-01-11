@@ -20,8 +20,7 @@ case $ARCH in
 	;;
 esac
 
-# Clean and create build directory structure
-rm -rf "build"
+# Create build directory structure (don't clean, let workflow handle that)
 mkdir -p "build/$APP_NAME.app/Contents/MacOS"
 mkdir -p "build/$APP_NAME.app/Contents/Resources"
 
