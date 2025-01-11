@@ -28,12 +28,25 @@ jobs:
 
       - name: Create Universal App
         run: |
-          mkdir -p build/NeovideProject.app/Contents/MacOS
+          # First verify the source files exist
+          ls -la build/NeovideProject-intel.app/Contents/MacOS/
+          ls -la build/NeovideProject-arm.app/Contents/MacOS/
+
+          # Create full directory structure
+          mkdir -p build/NeovideProject.app/Contents/{MacOS,Resources}
+
+          # Create universal binary
           lipo -create \
             build/NeovideProject-intel.app/Contents/MacOS/neovide-project-launcher \
             build/NeovideProject-arm.app/Contents/MacOS/neovide-project-launcher \
             -output build/NeovideProject.app/Contents/MacOS/neovide-project-launcher
-          cp -r build/NeovideProject-intel.app/Contents/{Info.plist,Resources} build/NeovideProject.app/Contents/
+
+          # Copy all required files
+          cp build/NeovideProject-intel.app/Contents/Info.plist build/NeovideProject.app/Contents/
+          cp -r build/NeovideProject-intel.app/Contents/Resources/* build/NeovideProject.app/Contents/Resources/
+
+          # Make sure the launcher is executable
+          chmod +x build/NeovideProject.app/Contents/MacOS/neovide-project-launcher
 
           # Create universal DMG
           hdiutil create -volname "NeovideProject" -srcfolder "build/NeovideProject.app" -ov -format UDZO "build/NeovideProject-universal.dmg"

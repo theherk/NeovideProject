@@ -40,7 +40,7 @@ chmod +x "build/$APP_NAME.app/Contents/Resources/neovide-project"
 
 # Verify architecture of built binary
 echo "Verifying binary architecture..."
-file "build/$APP_NAME.app/Contents/MacOS/$APP_NAME"
+file "build/$APP_NAME.app/Contents/MacOS/neovide-project-launcher"
 
 echo "Building DMG..."
 hdiutil create -volname "$APP_NAME" -srcfolder "build/$APP_NAME.app" -ov -format UDZO "build/$APP_NAME.dmg"
