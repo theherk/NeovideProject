@@ -31,7 +31,7 @@ sed "s/com\.neovide\.project/$BUNDLE_ID/g" "src/Contents/Info.plist" >"build/$AP
 # Compile Swift launcher
 swiftc "src/Contents/MacOS/neovide-project-launcher.swift" \
 	-target $TARGET \
-	-o "build/$APP_NAME.app/Contents/MacOS/$APP_NAME"
+	-o "build/$APP_NAME.app/Contents/MacOS/neovide-project-launcher"
 
 # Copy resources
 cp "src/Contents/Resources/neovide-project" "build/$APP_NAME.app/Contents/Resources/"

@@ -30,9 +30,9 @@ jobs:
         run: |
           mkdir -p build/NeovideProject.app/Contents/MacOS
           lipo -create \
-            build/NeovideProject-intel.app/Contents/MacOS/NeovideProject \
-            build/NeovideProject-arm.app/Contents/MacOS/NeovideProject \
-            -output build/NeovideProject.app/Contents/MacOS/NeovideProject
+            build/NeovideProject-intel.app/Contents/MacOS/neovide-project-launcher \
+            build/NeovideProject-arm.app/Contents/MacOS/neovide-project-launcher \
+            -output build/NeovideProject.app/Contents/MacOS/neovide-project-launcher
           cp -r build/NeovideProject-intel.app/Contents/{Info.plist,Resources} build/NeovideProject.app/Contents/
 
           # Create universal DMG
@@ -41,9 +41,9 @@ jobs:
       - name: Verify Build Artifacts
         run: |
           ls -la build/
-          file build/NeovideProject-intel.app/Contents/MacOS/NeovideProject
-          file build/NeovideProject-arm.app/Contents/MacOS/NeovideProject
-          file build/NeovideProject.app/Contents/MacOS/NeovideProject
+          file build/NeovideProject-intel.app/Contents/MacOS/neovide-project-launcher
+          file build/NeovideProject-arm.app/Contents/MacOS/neovide-project-launcher
+          file build/NeovideProject.app/Contents/MacOS/neovide-project-launcher
           test -f "build/NeovideProject-intel.dmg"
           test -f "build/NeovideProject-arm.dmg"
           test -f "build/NeovideProject-universal.dmg"
