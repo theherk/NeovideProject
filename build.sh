@@ -21,4 +21,7 @@ cp "src/Contents/Resources/neovide-project" "build/$APP_NAME.app/Contents/Resour
 cp "src/Contents/Resources/neovide.icns" "build/$APP_NAME.app/Contents/Resources/"
 chmod +x "build/$APP_NAME.app/Contents/Resources/neovide-project"
 
-echo "Build complete: build/$APP_NAME.app"
+echo "Building DMG..."
+hdiutil create -volname "$APP_NAME" -srcfolder "build/$APP_NAME.app" -ov -format UDZO "build/$APP_NAME.dmg"
+
+echo "Build complete: build/$APP_NAME.app and build/$APP_NAME.dmg"
