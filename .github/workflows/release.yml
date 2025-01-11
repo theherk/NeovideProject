@@ -17,20 +17,24 @@ jobs:
       - name: Build Intel App
         run: |
           ARCH="x86_64" ./build.sh
-          mv build/NeovideProject.app build/NeovideProject-intel.app
-          mv build/NeovideProject.dmg build/NeovideProject-intel.dmg
+          cp -R build/NeovideProject.app build/NeovideProject-intel.app || exit 1
+          cp build/NeovideProject.dmg build/NeovideProject-intel.dmg || exit 1
+          rm -rf build/NeovideProject.app build/NeovideProject.dmg
 
       - name: Build ARM App
         run: |
           ARCH="arm64" ./build.sh
-          mv build/NeovideProject.app build/NeovideProject-arm.app
-          mv build/NeovideProject.dmg build/NeovideProject-arm.dmg
+          cp -R build/NeovideProject.app build/NeovideProject-arm.app || exit 1
+          cp build/NeovideProject.dmg build/NeovideProject-arm.dmg || exit 1
+          rm -rf build/NeovideProject.app build/NeovideProject.dmg
 
       - name: Create Universal App
         run: |
           # First verify the source files exist
-          ls -la build/NeovideProject-intel.app/Contents/MacOS/
-          ls -la build/NeovideProject-arm.app/Contents/MacOS/
+          echo "Checking Intel build..."
+          ls -la build/NeovideProject-intel.app/Contents/MacOS/neovide-project-launcher || exit 1
+          echo "Checking ARM build..."
+          ls -la build/NeovideProject-arm.app/Contents/MacOS/neovide-project-launcher || exit 1
 
           # Create full directory structure
           mkdir -p build/NeovideProject.app/Contents/{MacOS,Resources}
