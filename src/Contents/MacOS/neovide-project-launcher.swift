@@ -5,6 +5,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let script = Bundle.main.path(forResource: "neovide-project", ofType: nil)!
     let logFile = "/tmp/neovide-launcher.log"
     var tasks: [Process] = []
+    private var hasHandledURL = false
 
     func log(_ message: String) {
         let timestamp = DateFormatter.localizedString(
@@ -28,9 +29,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         log("App launched with args: \(CommandLine.arguments)")
-        if CommandLine.arguments.count <= 1 {
-            log("No arguments, running script with HOME")
-            runScript(FileManager.default.homeDirectoryForCurrentUser.path)
+
+        // Wait a brief moment to see if we get a URL open event
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            guard let self = self else { return }
+
+            // Only launch HOME if we haven't handled any URLs
+            if !self.hasHandledURL {
+                log("No URL events received, running script with HOME")
+                self.runScript(FileManager.default.homeDirectoryForCurrentUser.path)
+            }
         }
     }
 
@@ -46,6 +54,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func application(_ application: NSApplication, open urls: [URL]) {
         log("Received URLs: \(urls)")
+        hasHandledURL = true
         for url in urls {
             handlePath(url.path)
         }
@@ -67,15 +76,38 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         env["PATH"] = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
         task.environment = env
 
+        // Setup pipe to capture output
+        let pipe = Pipe()
+        task.standardOutput = pipe
+        task.standardError = pipe
+
         task.arguments = [path]
         log("Running script with path: \(path)")
 
         do {
             try task.run()
-            tasks.append(task)
-            tasks = tasks.filter { !$0.isRunning }
+
+            // Wait for the script to complete or timeout
+            DispatchQueue.global(qos: .background).async {
+                task.waitUntilExit()
+
+                let data = pipe.fileHandleForReading.readDataToEndOfFile()
+                if let output = String(data: data, encoding: .utf8) {
+                    self.log("Script output: \(output)")
+                }
+
+                DispatchQueue.main.async {
+                    NSApp.terminate(nil)
+                }
+            }
+
+            // Failsafe timeout
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+                NSApp.terminate(nil)
+            }
         } catch {
             log("Error launching script: \(error)")
+            NSApp.terminate(nil)
         }
     }
 }

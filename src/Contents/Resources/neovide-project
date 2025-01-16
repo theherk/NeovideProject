@@ -12,14 +12,24 @@ if [ -e "$target" ]; then
     target=$(cd "$(dirname "$target")" 2>/dev/null && pwd -P)/"$(basename "$target")"
 fi
 
-# Get git root or fallback to HOME - use dirname if target is a file
+# Get git root or fallback to target directory - use dirname if target is a file
 target_dir=$([ -f "$target" ] && dirname "$target" || echo "$target")
-git_root=$(cd "$target_dir" 2>/dev/null && git rev-parse --show-toplevel)
-if [ -z "$git_root" ]; then
-    git_root="$HOME"
-    socket_name="neovide-home"
-else
+
+git_root=$(cd "$target_dir" 2>/dev/null && git rev-parse --show-toplevel 2>/dev/null)
+
+# Determine socket name and working directory
+if [ -n "$git_root" ]; then
+    # We're in a git repo
     socket_name="neovide-$(printf "%s" "$git_root" | md5 -q)"
+    working_dir="$git_root"
+elif [ "$target" = "$HOME" ]; then
+    # We're in HOME
+    socket_name="neovide-home"
+    working_dir="$HOME"
+else
+    # We're in a regular directory
+    socket_name="neovide-$(printf "%s" "$target_dir" | md5 -q)"
+    working_dir="$target_dir"
 fi
 
 socket_path="/tmp/$socket_name.sock"
@@ -36,5 +46,5 @@ if [ -e "$socket_path" ] && nvim --server "$socket_path" --remote-expr '1' >/dev
         nvim --server "$socket_path" --remote-send "<C-\\><C-N>:cd $target<CR>:NeovideFocus<CR>"
     fi
 else
-    (cd "$git_root" && NVIM_LISTEN_ADDRESS="$socket_path" neovide)&
+    (cd "$working_dir" && NVIM_LISTEN_ADDRESS="$socket_path" neovide) &
 fi
