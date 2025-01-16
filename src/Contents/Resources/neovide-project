@@ -4,12 +4,12 @@ target="$1"
 
 # If no target, use HOME
 if [ -z "$target" ]; then
-    target="$HOME"
+	target="$HOME"
 fi
 
 # Get absolute path
 if [ -e "$target" ]; then
-    target=$(cd "$(dirname "$target")" 2>/dev/null && pwd -P)/"$(basename "$target")"
+	target=$(cd "$(dirname "$target")" 2>/dev/null && pwd -P)/"$(basename "$target")"
 fi
 
 # Get git root or fallback to target directory - use dirname if target is a file
@@ -19,32 +19,32 @@ git_root=$(cd "$target_dir" 2>/dev/null && git rev-parse --show-toplevel 2>/dev/
 
 # Determine socket name and working directory
 if [ -n "$git_root" ]; then
-    # We're in a git repo
-    socket_name="neovide-$(printf "%s" "$git_root" | md5 -q)"
-    working_dir="$git_root"
+	# We're in a git repo
+	socket_name="neovide-$(printf "%s" "$git_root" | md5 -q)"
+	working_dir="$git_root"
 elif [ "$target" = "$HOME" ]; then
-    # We're in HOME
-    socket_name="neovide-home"
-    working_dir="$HOME"
+	# We're in HOME
+	socket_name="neovide-home"
+	working_dir="$HOME"
 else
-    # We're in a regular directory
-    socket_name="neovide-$(printf "%s" "$target_dir" | md5 -q)"
-    working_dir="$target_dir"
+	# We're in a regular directory
+	socket_name="neovide-$(printf "%s" "$target_dir" | md5 -q)"
+	working_dir="$target_dir"
 fi
 
 socket_path="/tmp/$socket_name.sock"
 
 if [ -e "$socket_path" ] && nvim --server "$socket_path" --remote-expr '1' >/dev/null 2>&1; then
-    if [ -f "$target" ]; then
-        if [ -n "$git_root" ] && echo "$target" | grep -q "^$git_root/"; then
-            rel_path="${target#$git_root/}"
-        else
-            rel_path="$target"
-        fi
-        nvim --server "$socket_path" --remote-send "<C-\\><C-N>:e $rel_path<CR>:NeovideFocus<CR>"
-    else
-        nvim --server "$socket_path" --remote-send "<C-\\><C-N>:cd $target<CR>:NeovideFocus<CR>"
-    fi
+	if [ -f "$target" ]; then
+		if [ -n "$git_root" ] && echo "$target" | grep -q "^$git_root/"; then
+			rel_path="${target#$git_root/}"
+		else
+			rel_path="$target"
+		fi
+		nvim --server "$socket_path" --remote-send "<C-\\><C-N>:e $rel_path<CR>:NeovideFocus<CR>"
+	else
+		nvim --server "$socket_path" --remote-send "<C-\\><C-N>:cd $target<CR>:NeovideFocus<CR>"
+	fi
 else
-    (cd "$working_dir" && NVIM_LISTEN_ADDRESS="$socket_path" neovide) &
+	(cd "$working_dir" && NVIM_LISTEN_ADDRESS="$socket_path" neovide) &
 fi
