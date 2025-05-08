@@ -73,7 +73,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         task.executableURL = URL(fileURLWithPath: script)
 
         var env = ProcessInfo.processInfo.environment
-        env["PATH"] = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+        // Preserve existing PATH and append standard locations
+        let existingPath = env["PATH"] ?? ""
+        let standardPath = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+        env["PATH"] = "\(existingPath):\(standardPath)"
+        log("Using PATH: \(env["PATH"] ?? "none")")
         task.environment = env
 
         // Setup pipe to capture output
