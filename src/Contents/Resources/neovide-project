@@ -46,5 +46,5 @@ if [ -e "$socket_path" ] && nvim --server "$socket_path" --remote-expr '1' >/dev
 		nvim --server "$socket_path" --remote-send "<C-\\><C-N>:cd $target<CR>:NeovideFocus<CR>"
 	fi
 else
-	(cd "$working_dir" && NVIM_LISTEN_ADDRESS="$socket_path" neovide) &
+	NVIM_LISTEN_ADDRESS="$socket_path" neovide -- --cmd "cd $working_dir" &
 fi
